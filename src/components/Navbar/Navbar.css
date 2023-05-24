@@ -1,0 +1,49 @@
+.nav {
+    background-color: 	#5A5A5A;
+    display: flex;
+    height: 3.5rem;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 0 2rem;
+}
+
+.nav ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+}
+
+.nav a {
+    text-decoration: none;
+    color: #ffffff;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav li {
+    padding: 0 0.5rem;
+}
+
+.nav li:hover {
+    background-color: #808080;
+}
+
+.title {
+    font-weight:bold;
+    font-size: 2rem;
+}
+
+.apikey {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    color: #ffffff;
+}
+
+.apikey input {
+    background-color: 	#808080;
+    color: #ffffff;
+}
