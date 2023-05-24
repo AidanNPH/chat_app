@@ -1,0 +1,49 @@
+.tableContainter {
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    border: 3px;
+}
+
+.tableContainer table {
+    width: 100%;
+    height: 100%;
+    border-spacing: 1rem;
+}
+
+.newButton {
+    width: 15%;
+    height: 2rem;
+    border: none;
+    border-radius: 0;
+    background-color: #fa6b6b; 
+}
+
+.newButton:hover {
+    background-color: #fa3c3c;
+}
+
+.firstColumn {
+    width: 32%
+}
+
+.secondColumn {
+    width: 32%
+}
+
+.thirdColumn {
+    width: 32%
+}
+
+.fourthColumn {
+    width: 6%;
+}
+
+.cell {
+    width: 100%;
+}
+
+.fourthColumn:hover {
+    background-color: #808080;
+}
