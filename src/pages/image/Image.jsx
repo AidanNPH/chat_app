@@ -14,7 +14,7 @@ export default function Image({ apiKey }) {
     const [inputPrompt, setInputPrompt] = useState('')
     const [finalPrompt, setFinalPrompt] = useState('')
     const [details, setDetails] = useState({})
-    const [imageURL, setImageURL] = useState('https://upload.wikimedia.org/wikipedia/commons/1/15/Cat_August_2010-4.jpg')
+    const [imageURL, setImageURL] = useState('')
 
     const [chatHistory, setChatHistory] = useState([]);
     const [first, setFirst] = useState('')

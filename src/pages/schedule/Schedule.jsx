@@ -6,11 +6,6 @@ import './Schedule.css'
 import TodoList from "../../components/TodoList/TodoList";
 import ScheduleList from '../../components/ScheduleList/ScheduleList';
 
-function parseFirstPrompt(prompt) {
-    // TODO
-    return `You are now responsible for improving text-to-image generation prompts. I will give you the prompt at the end of this message. Please help improve the prompt by telling me what more detailed attributes of the image you need and suggesting one content for each of these attributes. Try to make these attributes are not related. For replying to me for the first time, return two JSONs but no other words. The first JSON should contain the attributes and corresponding suggested content. For example, { "scene": "mountain", "weather": "sunny", ... }. The second JSON should contain the complete prompt updated with your suggested content. That is { "prompt": <new_prompt> }. Afterward, if I reply to you stating a JSON with updated content, update the prompt with the content in my JSON and return it to me. Here is the prompt: ${prompt}`
-}
-
 export default function Schedule({ apiKey }) {
     const config = new Configuration({ apiKey: apiKey, })
     const openai = new OpenAIApi(config)
@@ -18,29 +13,7 @@ export default function Schedule({ apiKey }) {
     const [startDate, setStartDate] = useState(new Date())
     const [endDate, setEndDate] = useState(new Date())
     const [todo, setTodo] = useState([])
-    const [schedule, setSchedule] = useState({
-        "10/4": ["FYP final report (Day 1)", "LANG presentation (Day 1)", "LANG essay (Day 1)", "MATH homework (Day 1)"],
-        "11/4": ["FYP final report (Day 2)", "LANG presentation (Day 2)", "LANG essay (Day 2)", "MATH homework (Day 2)"],
-        "12/4": ["FYP final report (Day 3)", "LANG presentation (Day 3)", "LANG essay (Day 3)", "MATH homework (Day 3)"],
-        "13/4": ["FYP final report (Day 4)", "LANG presentation (Day 4)", "LANG essay (Day 4)", "MATH homework (Day 4)"],
-        "14/4": ["FYP final report (Day 5)", "LANG presentation (Day 5)", "LANG essay (Day 5)", "MATH homework (Day 5)"],
-        "15/4": ["FYP final report (Day 6)", "LANG essay (Day 6)", "MATH homework (Day 6)"],
-        "16/4": ["FYP final report (Day 7)", "LANG essay (Day 7)", "MATH homework (Day 7)"],
-        "17/4": ["FYP final report (Day 8)", "LANG essay (Day 8)", "MATH homework (Day 8)"],
-        "18/4": ["FYP final report (Day 9)", "LANG essay (Day 9)", "MATH homework (Day 9)"],
-        "19/4": ["FYP final report (Day 10)", "LANG essay (Day 10)", "MATH homework (Day 10)"],
-        "20/4": ["FYP final report (Deadline)"],
-        "21/4": ["FYP presentation (Day 1)", "LANG essay (Day 11)", "MATH homework (Day 11)"],
-        "22/4": ["FYP presentation (Day 2)", "LANG essay (Day 12)", "MATH homework (Day 12)"],
-        "23/4": ["FYP presentation (Day 3)", "LANG essay (Day 13)", "MATH homework (Day 13)"],
-        "24/4": ["FYP presentation (Day 4)", "LANG essay (Day 14)", "MATH homework (Day 14)"],
-        "25/4": ["FYP presentation (Day 5)", "LANG essay (Day 15)", "MATH homework (Day 15)"],
-        "26/4": ["LANG presentation (Deadline)"],
-        "27/4": ["FYPpresentation (Day 6)", "LANG essay (Day 16)", "MATH homework (Day 16)"],
-        "28/4": ["FYP presentation (Day 7)", "MATH homework (Deadline)"],
-        "29/4": ["FYP presentation (Deadline)"],
-        "30/4": ["LANG essay (Deadline)"],
-    })
+    const [schedule, setSchedule] = useState({})
     const [request, setRequest] = useState('')
     const [chatHistory, setChatHistory] = useState([])
 
@@ -57,9 +30,21 @@ export default function Schedule({ apiKey }) {
         setTodo(todo.filter((item) => item.task !== task))
     }
 
-    function updateSchedule(response) {
-        // TODO: process response
-        setSchedule(response)
+    function parseFirstPrompt() {
+        let scheduleRequest = `You are now an assistant who helps a student plan a work schedule for the period between ${startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} and ${endDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}. Here is the list of tasks:\n\n`
+
+        todo.forEach(item => {
+            scheduleRequest += `- ${item['task']} (Deadline: ${item['DDL']}, Workload: ${item['workload']})\n`
+        })
+        scheduleRequest += `\nPlease design a schedule for my preparation work so that I will work on a portion of each task every day. Each task should be completed on or before the deadline, and I will not need to work on it after the deadline. If the workload is lighter, the preparation time is shorter. Return the schedule in a JSON format. For example, {"1/4": ["Task A (Day 1)", "Task B (Day 1)"], ...}. After giving me the schedule, I will reply with a description of special situations or my working style. Please adjust the previous schedule and give me an updated schedule.`
+
+        return scheduleRequest
+    }
+
+    function updateSchedule(result) {
+        const scheduleJson = '{' + result.split('{').pop().split('}')[0] + '}'
+        setSchedule(JSON.parse(scheduleJson))
+        console.log('Schedule Updated')
     }
 
     function handleChangeStartDate(date) {
@@ -75,11 +60,9 @@ export default function Schedule({ apiKey }) {
     }
 
     async function handleGenerateSchedule(event) {
-        const prompt = parseFirstPrompt(inputPrompt)
-
         const newChatHistory = [{
             role: "user",
-            content: prompt
+            content: parseFirstPrompt()
         }]
 
         const result = await openai.createChatCompletion({
